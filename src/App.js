@@ -3,10 +3,11 @@ import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "./components/layout/Header";
 import About from "./components/pages/about";
+import { Provider } from "react-redux";
+import store from "./store";
 
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
 import Contacts from "./components/contacts/Contacts";
-import { Provider } from "./context";
 import AddContact from "./components/contacts/AddContact";
 import notFound from "./components/pages/notFound";
 import EditContact from "./components/contacts/EditContact";
@@ -14,7 +15,7 @@ import EditContact from "./components/contacts/EditContact";
 class App extends Component {
   render() {
     return (
-      <Provider>
+      <Provider store={store}>
         <Router>
           <div className="App">
             <Header branding="Contact Manager App" />

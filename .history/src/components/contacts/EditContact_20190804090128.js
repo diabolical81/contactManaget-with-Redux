@@ -1,11 +1,10 @@
 import React, { Component } from "react";
-// import uuid from "uuid";
-import TextInputGroup from "../layout/TextInputGroup";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { addContacts } from "../../actions/contactActions";
+import { getContact, updateContact } from "../../actions/contactActions";
 // import uuid from "uuid";
-class AddContact extends Component {
+import TextInputGroup from "../layout/TextInputGroup";
+class EditContact extends Component {
   state = {
     name: "",
     phone: "",
@@ -13,11 +12,26 @@ class AddContact extends Component {
     errors: {}
   };
 
+  componentWillReceiveProps(nextProps, nextState) {
+    const { name, phone, email } = nextProps.contact;
+    this.setState({
+      name,
+      email,
+      phone
+    });
+  }
+
+  async componentDidMount() {
+    const { id } = this.props.match.params;
+    this.props.getContact(id);
+  }
+
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
   onSubmit = e => {
+    console.log("it comes here");
     e.preventDefault();
     const { name, email, phone } = this.state;
     // Check for errors
@@ -33,14 +47,17 @@ class AddContact extends Component {
       this.setState({ errors: { phone: "Phone is required" } });
       return;
     }
-    const newContact = {
-      // id: uuid(),
+
+    const { id } = this.props.match.params;
+
+    const updateContact = {
+      id,
       name,
       email,
       phone
     };
 
-    this.props.addContacts(newContact);
+    this.props.updateContact(updateContact);
     // Clearing the state
     this.setState({
       name: "",
@@ -57,10 +74,10 @@ class AddContact extends Component {
     return (
       <div className="card mb-3">
         <div className="card-header">
-          <h5>Add Contacts</h5>
+          <h5>Edit Contact</h5>
         </div>
         <div className="card-body">
-          <form onSubmit={this.onSubmit}>
+          <form>
             <TextInputGroup
               label="Name"
               name="name"
@@ -89,7 +106,7 @@ class AddContact extends Component {
             <div className="form-group">
               <input
                 type="submit"
-                value="Add Contact"
+                value="Edit Contact"
                 className="form-control btn btn-sm btn-danger"
               />
             </div>
@@ -100,10 +117,16 @@ class AddContact extends Component {
   }
 }
 
-AddContact.protoTypes = {
-  addContacts: PropTypes.func.isRequired
+EditContact.propTypes = {
+  contact: PropTypes.object.isRequired,
+  getContact: PropTypes.func.isRequired
 };
+
+const mapStateToProps = state => ({
+  contact: state.contact.contact
+});
+
 export default connect(
-  null,
-  { addContacts }
-)(AddContact);
+  mapStateToProps,
+  { getContact, updateContact }
+)(EditContact);
